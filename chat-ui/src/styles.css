@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    background-color: #121212;
+    color: #f5f5f5;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  ::selection {
+    background-color: #ffd600;
+    color: #0a0a0a;
+  }
+}
+
+@layer utilities {
+  /* Custom scrollbars */
+  .yk-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .yk-scroll::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 3px;
+  }
+  .yk-scroll::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+  }
+  .yk-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* Input glow effect */
+  .input-glow-wrapper {
+    position: relative;
+  }
+  .input-glow-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 0.75rem;
+    background: rgba(255, 214, 0, 0.15);
+    filter: blur(6px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .input-glow-wrapper:focus-within::before {
+    opacity: 1;
+  }
+
+  /* Thinking dots animation */
+  @keyframes thinking-bounce {
+    0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+  .thinking-dot {
+    animation: thinking-bounce 1.2s infinite ease-in-out;
+  }
+  .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+  .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  /* Streaming cursor */
+  @keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .stream-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: #ffd600;
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink-cursor 0.7s step-end infinite;
+  }
+
+  /* Fade-up message animation */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .msg-appear {
+    animation: fade-up 0.2s ease forwards;
+  }
+
+  /* Recording pulse */
+  @keyframes pulse-red {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  }
+  .rec-pulse {
+    animation: pulse-red 1s infinite;
+  }
+
+  /* Online dot glow */
+  .online-dot {
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+  }
+
+  /* Toast */
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+  @keyframes toast-out {
+    from { opacity: 1; transform: translateX(-50%) translateY(0); }
+    to   { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  }
+  .toast-show {
+    animation: toast-in 0.2s ease forwards;
+  }
+  .toast-hide {
+    animation: toast-out 0.2s ease forwards;
+  }
+}

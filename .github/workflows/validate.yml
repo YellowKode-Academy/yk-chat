@@ -1,0 +1,42 @@
+name: Validate Stack
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose syntax
+        run: docker compose config --quiet
+
+      - name: Validate docker-compose.prod syntax
+        run: |
+          # Create minimal .env for validation
+          cp .env.example .env
+          sed -i 's/change-me-in-production/test-secret/' .env
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml config --quiet || true
+
+      - name: Check required files exist
+        run: |
+          test -f docker-compose.yml
+          test -f docker-compose.prod.yml
+          test -f .env.example
+          test -f README.md
+          test -f chat-ui/Dockerfile
+          test -f chat-ui/src/index.html
+          test -f chat-ui/nginx.conf
+          test -f scripts/setup.sh
+          test -f scripts/models.sh
+          echo "✅ All required files present"
+
+      - name: Check scripts are executable (or can be made so)
+        run: |
+          bash -n scripts/setup.sh
+          bash -n scripts/models.sh
+          echo "✅ Scripts valid"

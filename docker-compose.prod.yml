@@ -1,0 +1,46 @@
+version: "3.9"
+
+# ──────────────────────────────────────────────────────────────
+# docker-compose.prod.yml — Production with Traefik + HTTPS
+# Usage: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ──────────────────────────────────────────────────────────────
+
+services:
+  ollama:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama.rule=Host(`ollama.${DOMAIN}`)"
+      - "traefik.http.routers.ollama.entrypoints=websecure"
+      - "traefik.http.routers.ollama.tls.certresolver=letsencrypt"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+      # Basic auth para proteger a API
+      - "traefik.http.routers.ollama.middlewares=ollama-auth"
+      - "traefik.http.middlewares.ollama-auth.basicauth.users=${OLLAMA_BASIC_AUTH}"
+    networks:
+      - traefik_public
+
+  chat-ui:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gemma-chat.rule=Host(`chat.${DOMAIN}`)"
+      - "traefik.http.routers.gemma-chat.entrypoints=websecure"
+      - "traefik.http.routers.gemma-chat.tls.certresolver=letsencrypt"
+      - "traefik.http.services.gemma-chat.loadbalancer.server.port=80"
+    networks:
+      - traefik_public
+
+  open-webui:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gemma-webui.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.gemma-webui.entrypoints=websecure"
+      - "traefik.http.routers.gemma-webui.tls.certresolver=letsencrypt"
+      - "traefik.http.services.gemma-webui.loadbalancer.server.port=8080"
+    networks:
+      - traefik_public
+
+networks:
+  traefik_public:
+    external: true
+  gemma4_net:
+    driver: bridge
